@@ -1,0 +1,84 @@
+.wedding-details {
+  padding: 3rem 2rem 2rem;
+  background-image: url('/assets/images/soft-background.jpg');
+  background-size: cover;
+  background-position: center;
+  color: #333;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  max-width: 900px;
+  margin: 4rem auto 0 auto;
+
+  h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #ff4081;
+    background-color: transparent;
+  }
+
+  p {
+    font-size: 1rem;
+    margin: 0.8rem 0;
+    color: #333;
+    background-color: #fff;
+    padding: 0.8rem;
+    border-radius: 4px;
+    text-shadow: none;
+  }
+
+  .indent-paragraph {
+    text-indent: 1rem;
+  }
+
+  strong {
+    color: #ff4081;
+  }
+
+  .description {
+    display: block;
+    margin-top: 0.5rem;
+  }
+
+  .image-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .image-container img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  @media (max-width: 768px) {
+    padding: 2rem;
+
+    h1 {
+      font-size: 2rem;
+    }
+
+    p {
+      font-size: 0.9rem;
+    }
+
+    .image-container img {
+      max-width: 100%;
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 1rem;
+
+    h1 {
+      font-size: 1.8rem;
+    }
+
+    p {
+      font-size: 0.8rem;
+    }
+  }
+}

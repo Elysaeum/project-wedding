@@ -1,0 +1,162 @@
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 2rem;
+  background-color: #f4f7fc;
+  gap: 2rem;
+  min-height: 100vh;
+}
+
+mat-card {
+  width: 100%;
+  max-width: 800px;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+mat-card-header {
+  background-color: #3f51b5;
+  color: white;
+  padding: 16px 24px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+mat-card-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+mat-card-content {
+  padding: 16px 24px;
+}
+
+mat-form-field {
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+mat-label {
+  font-weight: 600;
+  color: #3f51b5;
+}
+
+mat-input, mat-select, mat-datepicker {
+  width: 100%;
+}
+
+button {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+mat-spinner {
+  margin: 10px;
+}
+
+/* Táblázat */
+mat-table {
+  width: 100%;
+  margin-top: 2rem;
+  border-collapse: collapse;
+  border: 1px solid #ddd;
+  background-color: white;
+}
+
+mat-header-row {
+  background-color: #3f51b5;
+  color: white;
+}
+
+mat-header-cell, mat-cell {
+  padding: 12px;
+  text-align: left;
+  font-size: 1rem;
+}
+
+mat-header-cell {
+  font-weight: 700;
+}
+
+mat-row:hover {
+  background-color: #f1f1f1;
+}
+
+mat-cell {
+  font-weight: 400;
+}
+
+.mat-column-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: flex-start;
+}
+
+.mat-column-actions button {
+  margin: 0;
+  width: auto;
+}
+
+.mat-column-actions button.mat-button.color-warn {
+  background-color: #f44336;
+  color: white;
+}
+
+.mat-column-actions button.mat-button.color-accent {
+  background-color: #8bc34a;
+  color: white;
+}
+
+.mat-column-actions button.mat-button.color-primary {
+  background-color: #3f51b5;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .mat-column-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .mat-column-actions button {
+    width: 100%;
+  }
+
+  .responsive-row {
+    display: block;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+  }
+
+  mat-header-cell {
+    display: none;
+  }
+
+  mat-cell {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+    position: relative;
+  }
+
+  mat-cell::before {
+    content: attr(data-header);
+    font-weight: 700;
+    display: block;
+    margin-bottom: 5px;
+  }
+}

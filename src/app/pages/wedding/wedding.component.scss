@@ -1,0 +1,214 @@
+.container {
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+
+  .wedding-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    animation: fadeIn 1s ease-out;
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.2)),
+      url('/assets/images/soft-background.jpg');
+    background-size: cover;
+    background-position: center center;
+    padding: 2rem;
+    border-radius: 8px;
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  }
+
+  .wedding-card {
+    width: 100%;
+    max-width: 800px;
+    box-sizing: border-box;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    margin: 0 auto;
+    position: relative;
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    &.alap {
+      border-left: 5px solid #e91e63;
+    }
+
+    &.prémium {
+      border-left: 5px solid #f44336;
+    }
+
+    &.luxus {
+      border-left: 5px solid #d500f9;
+    }
+
+    .mat-card-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #333;
+      transition: color 0.3s ease;
+
+      &:hover {
+        color: #e91e63;
+      }
+    }
+
+    .mat-card-subtitle {
+      font-size: 1rem;
+      color: #777;
+      font-style: italic;
+      margin-top: 0.5rem;
+    }
+
+    .mat-card-content p {
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #555;
+      margin: 1rem 0;
+      transition: color 0.3s ease;
+
+      &:hover {
+        color: #e91e63;
+      }
+    }
+
+    .favorite-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: transparent !important;
+      border: none !important;
+      padding: 8px;
+      transition: transform 0.3s, background-color 0.3s;
+
+      &:hover {
+        background-color: transparent !important;
+        transform: scale(1.1);
+      }
+
+      &:focus {
+        background-color: transparent !important;
+        outline: none;
+      }
+
+      mat-icon {
+        color: #e91e63;
+        transition: color 0.3s ease;
+
+        .favorite-button:hover & {
+          color: #d81b60;
+        }
+      }
+    }
+  }
+
+  mat-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.7));
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+
+    &:hover {
+      transform: scale(1.02);
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .wedding-card {
+    width: 100%;
+    max-width: 800px;
+    box-sizing: border-box;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    margin: 0 auto;
+    position: relative;
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    &.alap {
+      border-left: 5px solid #e91e63;
+    }
+
+    &.prémium {
+      border-left: 5px solid #f44336;
+    }
+
+    &.luxus {
+      border-left: 5px solid #d500f9;
+    }
+
+    .mat-card-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #333;
+      transition: color 0.3s ease;
+
+      &:hover {
+        color: #e91e63;
+      }
+    }
+
+    .mat-card-subtitle {
+      font-size: 1rem;
+      color: #777;
+      font-style: italic;
+      margin-top: 0.5rem;
+    }
+
+    .mat-card-content p {
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #555;
+      margin: 1rem 0;
+      transition: color 0.3s ease;
+
+      &:hover {
+        color: #e91e63;
+      }
+    }
+
+    .favorite-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: rgba(255, 255, 255, 0.7);
+      border-radius: 50%;
+      padding: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s, background-color 0.3s, box-shadow 0.3s ease;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.9);
+        transform: scale(1.1);
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+      }
+
+      &:focus {
+        background-color: rgba(255, 255, 255, 0.9);
+        outline: none;
+      }
+
+      mat-icon {
+        color: #e91e63;
+        transition: color 0.3s ease;
+
+        .favorite-button:hover & {
+          color: #d81b60;
+        }
+      }
+    }
+  }
+}

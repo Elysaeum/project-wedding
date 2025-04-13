@@ -1,0 +1,169 @@
+mat-sidenav-container {
+  display: flex;
+  height: 100vh;
+}
+
+mat-sidenav {
+  width: 250px;
+  background: linear-gradient(135deg, #fff0f5, #ffe4e1);
+  color: #4a4a4a;
+}
+
+mat-sidenav-content {
+  flex-grow: 1;
+}
+
+mat-toolbar {
+  background-color: #e91e63;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+}
+
+mat-icon {
+  color: white;
+  font-size: 28px;
+}
+
+div {
+  font-family: 'Great Vibes', cursive;
+  font-size: 1.8rem;
+  letter-spacing: 1px;
+}
+
+nav {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+ul {
+  display: flex;
+  list-style: none;
+  align-items: center;
+  margin-block-start: 0;
+  margin-block-end: 0;
+  gap: 30px;
+}
+
+a {
+  text-decoration: none;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 500;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 0%;
+  height: 2px;
+  background-color: #fff;
+  transition: width 0.3s ease;
+}
+
+a:hover::after {
+  width: 100%;
+}
+
+a:hover {
+  color: #ffdbe7;
+}
+
+.menu-toggle-button {
+  display: none;
+}
+
+@media (max-width: 1000px) {
+  .menu-toggle-button {
+    display: block;
+  }
+
+  nav ul {
+    display: none;
+  }
+
+  mat-toolbar {
+    padding: 0 10px;
+  }
+
+  mat-toolbar div {
+    font-size: 1.4rem;
+  }
+
+  a {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  mat-sidenav {
+    width: 200px;
+  }
+
+  nav ul {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    background-color: #e91e63;
+    width: 100%;
+    padding: 10px;
+    gap: 15px;
+    display: none;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  nav ul.show {
+    display: flex;
+  }
+
+  a {
+    font-size: 1.2rem;
+  }
+
+  .menu-toggle-button {
+    display: block;
+    font-size: 30px;
+    color: white;
+  }
+
+  .menu-toggle-button.active {
+    transform: rotate(90deg);
+  }
+
+  a {
+    padding: 10px;
+    text-align: center;
+    width: 100%;
+  }
+
+  mat-toolbar {
+    padding: 0 10px;
+  }
+
+  div {
+    font-size: 1.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  mat-toolbar div {
+    font-size: 1.2rem;
+  }
+
+  a {
+    font-size: 1rem;
+  }
+
+  .menu-toggle-button {
+    font-size: 28px;
+  }
+}

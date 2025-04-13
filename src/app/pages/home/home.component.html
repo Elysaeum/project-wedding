@@ -1,0 +1,19 @@
+<div class="container">
+    <h1>Üdvözlünk álmaid esküvője oldalán!</h1>
+    <p>Nézd meg az esküvői helyszínkínálatunkat, és találd meg a tökéletes helyet a nagy napra!</p>
+    <button mat-flat-button color="primary" class="tasks" (click)="changePage()">Esküvők</button>
+    <div class="quote-container" [ngClass]="{ 'highlight': isHighlighted }">
+        <p class="quote-text" [ngStyle]="{ 'color': quoteColor, 'font-size': quoteFontSize }">
+            „Az esküvő nem csupán két ember közötti elköteleződés, hanem egy életre szóló kaland kezdetét jelenti.”
+        </p>
+        <p class="quote-text" [ngStyle]="{ 'color': quoteColor, 'font-size': quoteFontSize }">
+            „Mi segítünk abban, hogy a legszebb napod felejthetetlen legyen!”
+        </p>
+    </div>
+</div>
+
+<div class="slideshow-container">
+    <div *ngFor="let image of images; let i = index" class="mySlides fade" [ngClass]="{ 'active': currentIndex === i }">
+        <img [src]="'assets/images/' + image" alt="Esküvői helyszínek" class="slide-image">
+    </div>
+</div>

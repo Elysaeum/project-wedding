@@ -1,0 +1,64 @@
+<div *ngIf="ProfileObject" class="profile-container">
+  <div class="profile-header">
+    <h2>{{ ProfileObject.name.firstname }} {{ ProfileObject.name.lastname }} Profilja</h2>
+    <p>{{ ProfileObject.email }}</p>
+  </div>
+
+  <div *ngIf="reservedWeddings.length > 0">
+    <h3>Függő esküvők:</h3>
+    <div *ngFor="let wedding of reservedWeddings">
+      <mat-card class="profile-info-card">
+        <mat-card-header>
+          <mat-card-title>{{ wedding.title }}</mat-card-title>
+          <mat-card-subtitle>{{ wedding.location }} - {{ wedding.weddingDate | dateFormatter }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <p>{{ wedding.description }}</p>
+          <p><strong>Szolgáltatás szint:</strong> {{ wedding.serviceLevel }}</p>
+          <p><strong>Státusz:</strong> {{ wedding.status }}</p>
+
+          <mat-form-field appearance="fill" *ngIf="wedding.status === 'Függő'">
+            <mat-label>Szolgáltatás szint</mat-label>
+            <mat-select [(value)]="wedding.serviceLevel" (selectionChange)="onServiceLevelChange(wedding, $event)">
+              <mat-option *ngFor="let level of serviceLevels" [value]="level">{{ level }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <button mat-raised-button color="primary" [disabled]="isBookingInProgress"
+                  (click)="updateWeddingStatus(wedding.id, wedding.serviceLevel)" *ngIf="wedding.status === 'Függő'">
+            Lefoglalom
+          </button>
+
+          <button mat-button [routerLink]="['/wedding', wedding.id]" class="profile-link">
+            Részletek
+          </button>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <div *ngIf="bookedWeddings.length > 0">
+    <h3>Lefoglalt esküvők:</h3>
+    <div *ngFor="let wedding of bookedWeddings">
+      <mat-card class="profile-info-card">
+        <mat-card-header>
+          <mat-card-title>{{ wedding.title }}</mat-card-title>
+          <mat-card-subtitle>{{ wedding.location }} - {{ wedding.weddingDate | dateFormatter }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <p>{{ wedding.description }}</p>
+          <p><strong>Szolgáltatás szint:</strong> {{ wedding.serviceLevel }}</p>
+          <p><strong>Státusz:</strong> {{ wedding.status }}</p>
+
+          <button mat-button [routerLink]="['/wedding', wedding.id]" class="profile-link">
+            Részletek
+          </button>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <div *ngIf="reservedWeddings.length === 0 && bookedWeddings.length === 0">
+    <p>Nincsenek függő vagy lefoglalt esküvők.</p>
+  </div>
+</div>

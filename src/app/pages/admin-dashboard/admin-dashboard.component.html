@@ -1,0 +1,94 @@
+<mat-card>
+  <form [formGroup]="weddingForm" (ngSubmit)="addWedding()">
+    <mat-card-header>
+      <mat-card-title>Új esküvő hozzáadása</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-form-field appearance="fill">
+        <mat-label>Cím</mat-label>
+        <input matInput formControlName="title" />
+        <mat-error *ngIf="weddingForm.controls['title'].hasError('required')">A cím kötelező!</mat-error>
+        <mat-error *ngIf="weddingForm.controls['title'].hasError('minlength')">Legalább 3 karakter hosszú kell legyen!</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Helyszín</mat-label>
+        <input matInput formControlName="location" />
+        <mat-error *ngIf="weddingForm.controls['location'].hasError('required')">A helyszín kötelező!</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Esküvő dátuma</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="weddingDate" />
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Szolgáltatás szint</mat-label>
+        <mat-select formControlName="serviceLevel" [disabled]="true">
+          <mat-option value="Alap">Alap</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Leírás</mat-label>
+        <textarea matInput formControlName="description"></textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Kép URL</mat-label>
+        <input matInput formControlName="imageUrl" />
+      </mat-form-field>
+
+      <div *ngIf="isLoading" class="loading-spinner">
+        <mat-spinner></mat-spinner>
+      </div>
+
+      <button mat-raised-button color="primary" [disabled]="weddingForm.invalid || isLoading" type="submit">
+        {{ isLoading ? 'Hozzáadás...' : 'Hozzáadás' }}
+      </button>
+    </mat-card-content>
+  </form>
+</mat-card>
+
+<mat-table [dataSource]="weddings">
+  <ng-container matColumnDef="title">
+    <mat-header-cell *matHeaderCellDef> Cím </mat-header-cell>
+    <mat-cell *matCellDef="let wedding" [attr.data-header]="'Cím'"> {{ wedding.title }} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="location">
+    <mat-header-cell *matHeaderCellDef> Helyszín </mat-header-cell>
+    <mat-cell *matCellDef="let wedding" [attr.data-header]="'Helyszín'"> {{ wedding.location }} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="weddingDate">
+    <mat-header-cell *matHeaderCellDef> Esküvő dátuma </mat-header-cell>
+    <mat-cell *matCellDef="let wedding" [attr.data-header]="'Esküvő dátuma'"> {{ wedding.weddingDate | dateFormatter }} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="serviceLevel">
+    <mat-header-cell *matHeaderCellDef> Szolgáltatás szint </mat-header-cell>
+    <mat-cell *matCellDef="let wedding" [attr.data-header]="'Szolgáltatás szint'"> {{ wedding.serviceLevel }} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="status">
+    <mat-header-cell *matHeaderCellDef> Státusz </mat-header-cell>
+    <mat-cell *matCellDef="let wedding" [attr.data-header]="'Státusz'"> {{ wedding.status }} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="actions">
+    <mat-header-cell *matHeaderCellDef> Műveletek </mat-header-cell>
+    <mat-cell *matCellDef="let wedding" [attr.data-header]="'Műveletek'">
+      <div class="mat-column-actions">
+        <button mat-button (click)="editWedding(wedding)">Szerkesztés</button>
+        <button mat-button color="warn" (click)="deleteWedding(wedding.id)">Törlés</button>
+        <button mat-button color="accent" (click)="resetWeddingStatus(wedding)">Visszaállítás</button>
+      </div>
+    </mat-cell>
+  </ng-container>
+
+  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+  <mat-row class="responsive-row" *matRowDef="let row; columns: displayedColumns;"></mat-row>
+</mat-table>

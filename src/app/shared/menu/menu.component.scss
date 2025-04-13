@@ -1,0 +1,46 @@
+mat-nav-list {
+  padding: 0;
+  background: linear-gradient(135deg, #fff0f5, #ffe4e1);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+a[mat-list-item] {
+  color: #4a4a4a;
+  font-weight: 500;
+  padding: 14px 20px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  mat-icon {
+    color: #e91e63;
+    font-size: 24px;
+  }
+
+  span {
+    font-size: 1rem;
+  }
+
+  &:hover {
+    background-color: rgba(233, 30, 99, 0.1);
+    transform: translateX(3px);
+  }
+}
+
+.active-list-item {
+  background-color: rgba(233, 30, 99, 0.2);
+  border-left: 4px solid #e91e63;
+}
+
+@media only screen and (max-width: 768px) {
+  mat-nav-list {
+    border-radius: 0;
+  }
+
+  a[mat-list-item] {
+    padding: 12px 16px;
+  }
+}
