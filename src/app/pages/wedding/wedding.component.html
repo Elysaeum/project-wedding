@@ -1,35 +1,51 @@
 <div class="container">
   <h1>{{ title }}</h1>
 
-  <div class="wedding-cards">
-    <mat-card *ngFor="let wedding of weddings" class="wedding-card">
-      
-      <img class="thumbnail" [src]="wedding.imageUrl || '/assets/images/placeholder.jpg'" alt="{{ wedding.title }}" />
+  <!-- Keresési form -->
+  <form (ngSubmit)="filterWeddings()" class="search-form">
+    <mat-form-field>
+      <mat-label>Esküvő keresése</mat-label>
+      <input matInput [(ngModel)]="searchTerm" name="searchTerm" />
+    </mat-form-field>
+    <button mat-raised-button type="submit">Keresés</button>
+  </form>
 
-      <mat-card-header>
-        <mat-card-title>{{ wedding.title }}</mat-card-title>
-        <mat-card-subtitle>{{ wedding.location }}</mat-card-subtitle>
+  <!-- Esküvői kártyák -->
+  @if (filteredWeddings.length === 0) {
+    <p>Nincs megjeleníthető esküvő.</p>
+  } @else {
+    <div class="wedding-cards">
+      @for (wedding of filteredWeddings; track wedding.id) {
+        <mat-card class="wedding-card">
+          <img class="thumbnail" [src]="wedding.imageUrl || '/assets/images/placeholder.jpg'" alt="{{ wedding.title }}" />
 
-        <button mat-icon-button class="favorite-button" (click)="toggleFavorite(wedding)" color="warn">
-          <mat-icon>
-            {{ isFavorite(wedding.id) ? 'favorite' : 'favorite_border' }}
-          </mat-icon>
-        </button>
-      </mat-card-header>
+          <mat-card-header>
+            <mat-card-title>{{ wedding.title }}</mat-card-title>
 
-      <mat-card-content>
-        <p>{{ wedding.description }}</p>
-        <p><strong>Dátum:</strong> {{ wedding.weddingDate | dateFormatter }}</p>
-        <p><strong>Státusz:</strong> {{ wedding.status }}</p>
-      </mat-card-content>
+            <mat-card-subtitle>
+              {{ getLocationName(wedding.location) }}
+            </mat-card-subtitle>
 
-      <mat-card-actions>
-        <button mat-button *ngIf="wedding.status === 'Elérhető'" (click)="toggleWeddingStatus(wedding)">
-          Lefoglalom
-        </button>
-        
-        <button mat-button [routerLink]="['/wedding', wedding.id]">Részletek</button>
-      </mat-card-actions>
-    </mat-card>
-  </div>
+            <button mat-icon-button class="favorite-button" (click)="toggleFavorite(wedding)" color="warn">
+              <mat-icon>{{ isFavorite(wedding.id) ? 'favorite' : 'favorite_border' }}</mat-icon>
+            </button>
+          </mat-card-header>
+
+          <mat-card-content>
+            <p>{{ wedding.description }}</p>
+            <p><strong>Dátum:</strong> {{ wedding.weddingDate | dateFormatter }}</p>
+            <p><strong>Státusz:</strong> {{ wedding.status }}</p>
+          </mat-card-content>
+
+          <mat-card-actions>
+            @if (wedding.status === 'Elérhető') {
+              <button mat-button (click)="toggleWeddingStatus(wedding)">Lefoglalom</button>
+            }
+
+            <button mat-button [routerLink]="['/wedding', wedding.id]">Részletek</button>
+          </mat-card-actions>
+        </mat-card>
+      }
+    </div>
+  }
 </div>

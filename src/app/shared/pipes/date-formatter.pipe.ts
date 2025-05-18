@@ -5,22 +5,31 @@ import { Pipe, PipeTransform } from '@angular/core';
   standalone: true
 })
 export class DateFormatterPipe implements PipeTransform {
-  transform(value: string | Date): string {
+  transform(value: any): string {
     if (!value) return '';
-  
+
     try {
-      const date = typeof value === 'string' ? new Date(value) : value;
+      let date: Date;
+
+      if (value instanceof Date) {
+        date = value;
+      } else if (value?.seconds) {
+        date = new Date(value.seconds * 1000); 
+      } else if (typeof value === 'string') {
+        date = new Date(value);
+      } else {
+        return String(value);
+      }
+
       if (isNaN(date.getTime())) return String(value);
-  
+
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const day = String(date.getDate()).padStart(2, '0');
-      
+
       return `${year}-${month}-${day}`;
-    } catch (error) {
+    } catch {
       return String(value);
     }
   }
-  
-
 }

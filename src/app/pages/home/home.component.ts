@@ -22,9 +22,6 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
     this.isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
     
-    if (!this.isLoggedIn && this.router.url !== '/login') {
-      this.router.navigate(['/login']);
-    }
     this.startSlideshow();
   }
 

@@ -1,158 +1,140 @@
 import { Injectable } from '@angular/core';
-import { User, Role } from '../models/User';
+import { Firestore, doc, getDoc, collection, getDocs, query, where } from '@angular/fire/firestore';
+import { AuthService } from './auth.service';
+import { Observable, from, of } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
+import { User } from '../models/User';
 import { Wedding } from '../models/Wedding';
-import { ServiceLevel } from '../models/ServiceLevel'; // Importáld az Enumot
-import { Location } from '../models/Location'; // Importáld a Location interfészt
+import { updateDoc } from '@angular/fire/firestore';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private readonly storageKey = 'currentUser';
+  private currentUserSubject = new BehaviorSubject<User | null>(null);
+  currentUser$ = this.currentUserSubject.asObservable();
 
-  private currentUser: User;
+  constructor(
+    private firestore: Firestore,
+    private authService: AuthService,
+  
+  ) {
+    this.authService.currentUser.subscribe(async authUser => {
+      if (authUser) {
+        const userData = await this.fetchUserDoc(authUser.uid);
+        this.currentUserSubject.next(userData);
+      } else {
+        this.currentUserSubject.next(null);
+      }
+    });
+  }
 
-  constructor() {
-    const storedUser = localStorage.getItem(this.storageKey);
-    if (storedUser) {
-      this.currentUser = JSON.parse(storedUser);
-    } else {
-      this.currentUser = {
-        name: { firstname: 'Anna', lastname: 'Kovács' },
-        email: 'test@gmail.com',
-        password: 'testpw',
-        liked_weddings: this.getDefaultLikedWeddings(),
-        reserved_weddings: this.getDefaultReservedWeddings(),
-        role: Role.User
+  getFullUserData(): Observable<{
+    user: User | null,
+    likedWeddings: Wedding[],
+    reservedWeddings: Wedding[]
+  }> {
+    return this.authService.currentUser.pipe(
+      switchMap(authUser => {
+        if (!authUser) {
+          return of({
+            user: null,
+            likedWeddings: [],
+            reservedWeddings: []
+          });
+        }
+
+        return from(this.fetchUserData(authUser.uid));
+      })
+    );
+  }
+
+  private async fetchUserData(userId: string): Promise<{
+    user: User | null,
+    likedWeddings: Wedding[],
+    reservedWeddings: Wedding[]
+  }> {
+    try {
+      // 1. Felhasználó dokumentum lekérése
+      const userRef = doc(this.firestore, 'Users', userId);
+      const userSnap = await getDoc(userRef);
+
+      if (!userSnap.exists()) {
+        return { user: null, likedWeddings: [], reservedWeddings: [] };
+      }
+
+      const userData = userSnap.data() as User;
+      const user: User = { ...userData, id: userId };
+
+      // 2. Esküvők lekérdezése ID alapján
+      const likedWeddings = await this.getWeddingsByIds(user.liked_weddings);
+      const reservedWeddings = await this.getWeddingsByIds(user.reserved_weddings);
+
+      return {
+        user,
+        likedWeddings,
+        reservedWeddings
       };
+
+    } catch (error) {
+      console.error('Hiba a felhasználó vagy esküvők lekérése során:', error);
+      return { user: null, likedWeddings: [], reservedWeddings: [] };
     }
   }
 
-  private getDefaultLikedWeddings(): Wedding[] {
-    return [
-      {
-        id: 1,
-        title: 'Kertes esküvő',
-        location: {
-          name: 'Budapest',
-          city: 'Budapest',
-          country: 'Magyarország',
-          capacity: 100,
-          description: 'A szép kerthelyszín egy különleges esküvőhöz'
-        },
-        weddingDate: new Date('2024-06-15'),
-        serviceLevel: ServiceLevel.Prémium, // Enum érték használata
-        description: 'A beautiful wedding with a great view!',
-        status: 'Elérhető',
-        services: []
-      },
-      {
-        id: 2,
-        title: 'Kastély esküvő',
-        location: {
-          name: 'Debreceni Kastély',
-          city: 'Debrecen',
-          country: 'Magyarország',
-          capacity: 150,
-          description: 'Elegáns kastély, ami tökéletes helyszíne egy esküvőnek.'
-        },
-        weddingDate: new Date('2024-07-20'),
-        serviceLevel: ServiceLevel.Alap, // Enum érték használata
-        description: 'A simple but elegant wedding.',
-        status: 'Függő',
-        services: [
-          {
-            id: 1,
-            name: 'Dekoráció',
-            description: 'Romantikus dekoráció a tengerparton.',
-            price: 500,
-            available: true
-          },
-          {
-            id: 2,
-            name: 'Fotószolgáltatás',
-            description: 'Professzionális fotós az esküvőre.',
-            price: 1000,
-            available: true
-          }
-        ]
-      }
-    ];
+  private async fetchUserDoc(userId: string): Promise<User | null> {
+    const userRef = doc(this.firestore, 'Users', userId);
+    const userSnap = await getDoc(userRef);
+    if (userSnap.exists()) {
+      return { id: userId, ...userSnap.data() } as User;
+    }
+    return null;
   }
 
-  private getDefaultReservedWeddings(): Wedding[] {
-    return [
-      {
-        id: 3,
-        title: 'Romantikus esküvő homokos tengerparton',
-        location: {
-          name: 'Szeged Tengerpart',
-          city: 'Szeged',
-          country: 'Magyarország',
-          capacity: 200,
-          description: 'Luxus esküvő a homokos tengerparton.'
-        },
-        weddingDate: new Date('2024-08-01'),
-        serviceLevel: ServiceLevel.Luxus,
-        description: 'A luxurious wedding with grand arrangements.',
-        status: 'Foglalt',
-        services: [
-          {
-            id: 1,
-            name: 'Dekoráció',
-            description: 'Romantikus dekoráció a tengerparton.',
-            price: 500,
-            available: true
-          },
-          {
-            id: 2,
-            name: 'Fotószolgáltatás',
-            description: 'Professzionális fotós az esküvőre.',
-            price: 1000,
-            available: true
-          }
-        ] 
-      }
-    ];
+  private async getWeddingsByIds(ids: string[]): Promise<Wedding[]> {
+    if (!ids || ids.length === 0) return [];
+
+    const weddingsRef = collection(this.firestore, 'Weddings');
+    const q = query(weddingsRef, where('__name__', 'in', ids));
+    const snapshot = await getDocs(q);
+
+    const weddings: Wedding[] = [];
+    snapshot.forEach(doc => weddings.push({ ...doc.data(), id: doc.id } as Wedding));
+    return weddings;
   }
 
-  getCurrentUser(): User {
-    return this.currentUser;
-  }
+  async reserveWeddingForUser(userId: string, weddingId: string): Promise<void> {
+    const userRef = doc(this.firestore, 'Users', userId);
+    const userSnap = await getDoc(userRef);
 
-  setCurrentUser(user: User): void {
-    this.currentUser = user;
-    localStorage.setItem(this.storageKey, JSON.stringify(user));
-  }
-
-  likeWedding(wedding: Wedding): void {
-    const alreadyLiked = this.currentUser.liked_weddings.some(w => w.id === wedding.id);
-    if (!alreadyLiked) {
-      this.currentUser.liked_weddings.push(wedding);
-      this.setCurrentUser(this.currentUser);
+    if (userSnap.exists()) {
+      const userData = userSnap.data() as User;
+      const updatedList = Array.from(new Set([...(userData.reserved_weddings || []), weddingId]));
+      await updateDoc(userRef, { reserved_weddings: updatedList });
     }
   }
 
-  unlikeWedding(weddingId: number): void {
-    this.currentUser.liked_weddings = this.currentUser.liked_weddings.filter(w => w.id !== weddingId);
-    this.setCurrentUser(this.currentUser);
+   async likeWedding(wedding: Wedding): Promise<void> {
+    const user = this.currentUserSubject.value;
+    if (!user) throw new Error('Nincs bejelentkezett felhasználó');
+    const likedWeddings = new Set(user.liked_weddings || []);
+    likedWeddings.add(wedding.id);
+    const userRef = doc(this.firestore, 'Users', user.id);
+    await updateDoc(userRef, { liked_weddings: Array.from(likedWeddings) });
+    user.liked_weddings = Array.from(likedWeddings);
+    this.currentUserSubject.next(user);
   }
 
-  reserveWedding(wedding: Wedding): void {
-    const index = this.currentUser.reserved_weddings.findIndex(w => w.id === wedding.id);
-    if (index !== -1) {
-      this.currentUser.reserved_weddings[index] = wedding;
-    } else {
-      this.currentUser.reserved_weddings.push(wedding);
-    }
-    this.setCurrentUser(this.currentUser);
+  async unlikeWedding(weddingId: string): Promise<void> {
+    const user = this.currentUserSubject.value;
+    if (!user) throw new Error('Nincs bejelentkezett felhasználó');
+    const likedWeddings = new Set(user.liked_weddings || []);
+    likedWeddings.delete(weddingId);
+    const userRef = doc(this.firestore, 'Users', user.id);
+    await updateDoc(userRef, { liked_weddings: Array.from(likedWeddings) });
+    user.liked_weddings = Array.from(likedWeddings);
+    this.currentUserSubject.next(user);
   }
 
-  updateReservedWedding(weddingId: number, serviceLevel: ServiceLevel): void {
-    const reservedWedding = this.currentUser.reserved_weddings.find(w => w.id === weddingId);
-    if (reservedWedding) {
-      reservedWedding.serviceLevel = serviceLevel; // Enum típus
-      this.setCurrentUser(this.currentUser);
-    }
-  }
 }

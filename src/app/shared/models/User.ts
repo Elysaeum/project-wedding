@@ -7,13 +7,13 @@ export enum Role {
 
 
 export interface User {
+  id: string;
     name: {
       firstname: string;
       lastname: string;
     };
     email: string;
-    password: string;
-    liked_weddings: Wedding[];
-    reserved_weddings: Wedding[];
+    liked_weddings: string[];
+    reserved_weddings: string[];
     role: Role;
   }

@@ -1,6 +1,6 @@
 import { Component, OnDestroy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CommonModule } from '@angular/common';
 import { FakeLoadingService } from '../../shared/services/fake-loading.service';
+import { AuthService } from '../../shared/services/auth.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -28,85 +29,66 @@ import { Subscription } from 'rxjs';
   styleUrl: './login.component.scss'
 })
 export class LoginComponent implements OnDestroy{
-  email = new FormControl('');
-  password = new FormControl('');
+  email = new FormControl('', [Validators.required, Validators.email]);
+  password = new FormControl('', [Validators.required, Validators.minLength(6)]);
   isLoading: boolean = false;
   loginError: string = '';
   showLoginForm: boolean = true;
   loadingSubscription?: Subscription;
+  authSubscription?: Subscription;
 
-  constructor(private loadingService: FakeLoadingService, private router: Router) { }
+  constructor(
+    private authService: AuthService,
+    private loadingService: FakeLoadingService,
+    private router: Router
+  ) {}
 
   login() {
-    this.loginError = '';
-
-    if (this.email.value === 'test@gmail.com' && this.password.value === 'testpw') {
-      this.isLoading = true;
-      this.showLoginForm = false;
-
-      localStorage.setItem('isLoggedIn', 'true');
-
-      this.loadingService.loadingWithPromise().then((data: number) => {
-        if (data === 3) {
-          window.location.href = '/home';
-        }
-      }).catch(error => {
-        console.error(error);
-        this.isLoading = false;
-        this.showLoginForm = true;
-        this.loginError = 'Loading error occurred!';
-      }).finally(() => {
-        console.log("This executed finally!")
-      });
-    } else {
-      this.loginError = 'Invalid email or password!';
+    if (this.email.invalid) {
+      this.loginError = 'Please enter a valid email address';
+      return;
     }
-  }
+    
+    if (this.password.invalid) {
+      this.loginError = 'Password must be at least 6 characters long';
+      return;
+    }
 
-  login2() {
     const emailValue = this.email.value || '';
     const passwordValue = this.password.value || '';
+    
     this.isLoading = true;
     this.showLoginForm = false;
     this.loginError = '';
-    this.loadingService.loadingWithPromise2(emailValue, passwordValue).then((_: boolean) => {
-      console.log("This executed second!");
-      localStorage.setItem('isLoggedIn', 'true');
-      this.router.navigateByUrl('/home');
-    }).catch(error => {
-      this.isLoading = false;
-      this.showLoginForm = true;
-      this.loginError = 'Invalid email or password!';
-      console.error(error);
-    }).finally(() => {
-      console.log("This executed finally!");
-    });
 
-    console.log("This executed first!");
+    this.authService.signIn(emailValue, passwordValue)
+      .then(userCredential => {
+        console.log('Login successful:', userCredential.user);
+        this.authService.updateLoginStatus(true);
+        this.router.navigateByUrl('/home');
+      })
+      .catch(error => {
+        console.error('Login error:', error);
+        this.isLoading = false;
+        this.showLoginForm = true;
+        
+        switch(error.code) {
+          case 'auth/user-not-found':
+            this.loginError = 'No account found with this email address';
+            break;
+          case 'auth/wrong-password':
+            this.loginError = 'Incorrect password';
+            break;
+          case 'auth/invalid-credential':
+            this.loginError = 'Invalid email or password';
+            break;
+          default:
+            this.loginError = 'Authentication failed. Please try again later.';
+        }
+      });
   }
-  async login3() {
-    const emailValue = this.email.value || '';
-    const passwordValue = this.password.value || '';
-    try {
-      const bool = await this.loadingService.loadingWithPromise3(emailValue, passwordValue);
-      console.log(bool, "This executed second!");
-      this.isLoading = true;
-      this.showLoginForm = false;
-      this.router.navigateByUrl('/home');
-      localStorage.setItem('isLoggedIn', 'true');
-    } catch (error) {
-      console.error(error)
-    }
-    console.log("This executed finally!");
-  }
-  login4() {
-    const emailValue = this.email.value || '';
-    const passwordValue = this.password.value || '';
-    this.loadingSubscription = this.loadingService.loadingWithObservable2(emailValue, passwordValue).subscribe((data: boolean)=>{
-      console.log(data);
-    });
-  }
+
   ngOnDestroy() {
-    this.loadingSubscription?.unsubscribe;
+    this.authSubscription?.unsubscribe();
   }
 }

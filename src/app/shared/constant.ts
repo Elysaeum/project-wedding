@@ -4,149 +4,94 @@ import { ServiceLevel } from "./models/ServiceLevel";
 
 export const weddings: Wedding[] = [
   {
-    id: 1,
+    id: 'w1',
     title: 'Romantikus esküvő homokos tengerparton',
-    location: {
-      name: 'Maldív-szigetek',
-      city: 'Maldív-szigetek',
-      country: 'Indiai-óceán',
-      capacity: 200,
-      description: 'Romantikus tengerparti esküvő.'
-    },
+    location: 'loc1',
     weddingDate: new Date('2025-03-25'),
     serviceLevel: ServiceLevel.Prémium,
     description: 'Egy szép helyen, Maldív-szigeteken lévő esküvő.',
     status: 'Elérhető',
     imageUrl: 'assets/images/maldives.jpg',
-    services: [
-      {
-        id: 1,
-        name: 'Dekoráció',
-        description: 'Romantikus dekoráció a tengerparton.',
-        price: 500,
-        available: true
-      },
-      {
-        id: 2,
-        name: 'Fotószolgáltatás',
-        description: 'Professzionális fotós az esküvőre.',
-        price: 1000,
-        available: true
-      }
-    ]
+    services: ['svc1', 'svc2']
   },
   {
-    id: 2,
+    id: 'w2',
     title: 'Kastély esküvő',
-    location: {
-      name: 'Loire-völgye',
-      city: 'Loire-völgye',
-      country: 'Franciaország',
-      capacity: 100,
-      description: 'Középkori kastély, különleges esküvői helyszín.'
-    },
+    location: 'loc2',
     weddingDate: new Date('2025-02-25'),
     serviceLevel: ServiceLevel.Luxus,
     description: 'Egy középkori inspirált esküvő, Franciaország egyik kastélyában.',
     status: 'Függő',
     imageUrl: 'assets/images/loire.jpg',
-    services: [
-      {
-        id: 3,
-        name: 'Zenekar',
-        description: 'Élő zene a kastély kertjében.',
-        price: 2000,
-        available: true
-      },
-      {
-        id: 4,
-        name: 'Étkezés',
-        description: 'Hagyományos francia étkezés a vendégeknek.',
-        price: 1500,
-        available: true
-      }
-    ]
+    services: ['svc3', 'svc4']
   },
   {
-    id: 3,
+    id: 'w3',
     title: 'Kertes esküvő',
-    location: {
-      name: 'Toszkána, Olaszország',
-      city: 'Toszkána',
-      country: 'Olaszország',
-      capacity: 120,
-      description: 'Kerthelyszíni esküvő egy olasz villában.'
-    },
+    location: 'loc3',
     weddingDate: new Date('2025-01-25'),
     serviceLevel: ServiceLevel.Alap,
     description: 'Elbűvölő kerti esküvő, Toszkána egyik villájában.',
     status: 'Elérhető',
     imageUrl: 'assets/images/toszkana.jpg',
-    services: [
-      {
-        id: 5,
-        name: 'Kertészeti szolgáltatás',
-        description: 'Különleges virágok és növények a kertben.',
-        price: 300,
-        available: true
-      }
-    ]
+    services: ['svc5']
   }
 ];
+
 export const UserObject: User[] = [
   {
+    id: 'u1',
     name: {
       firstname: "John",
       lastname: "Doe",
     },
     email: "john.doe@example.com",
-    password: "password123",
-    liked_weddings: [weddings[0], weddings[3]],
-    reserved_weddings: [weddings[1]],
-    role: Role.Admin, 
+    liked_weddings: ['w1'],
+    reserved_weddings: ['w2'],
+    role: Role.Admin
   },
   {
+    id: 'u2',
     name: {
       firstname: "Jane",
       lastname: "Smith",
     },
     email: "jane.smith@example.com",
-    password: "pass456word",
-    liked_weddings: [weddings[2]],
+    liked_weddings: ['w3'],
     reserved_weddings: [],
-    role: Role.User,
+    role: Role.User
   },
   {
+    id: 'u3',
     name: {
       firstname: "Robert",
       lastname: "Johnson",
     },
     email: "robert.j@example.com",
-    password: "securePass789",
     liked_weddings: [],
-    reserved_weddings: [weddings[2], weddings[3]],
-    role: Role.Admin,
+    reserved_weddings: ['w3'],
+    role: Role.Admin
   },
   {
+    id: 'u4',
     name: {
       firstname: "Sarah",
       lastname: "Wilson",
     },
     email: "s.wilson@example.com",
-    password: "wilsonPass2024",
-    liked_weddings: [weddings[1]],
+    liked_weddings: ['w2'],
     reserved_weddings: [],
-    role: Role.User,
+    role: Role.User
   },
   {
+    id: 'u5',
     name: {
       firstname: "Michael",
       lastname: "Brown",
     },
     email: "m.brown@example.com",
-    password: "mikeBrown321",
-    liked_weddings: [weddings[0], weddings[1], weddings[2]],
-    reserved_weddings: [weddings[0]],
-    role: Role.Admin,
-  },
+    liked_weddings: ['w1', 'w2', 'w3'],
+    reserved_weddings: ['w1'],
+    role: Role.Admin
+  }
 ];

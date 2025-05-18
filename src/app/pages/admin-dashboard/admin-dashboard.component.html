@@ -1,20 +1,30 @@
 <mat-card>
-  <form [formGroup]="weddingForm" (ngSubmit)="addWedding()">
+  <form [formGroup]="weddingForm" (ngSubmit)="saveWedding()">
     <mat-card-header>
       <mat-card-title>Új esküvő hozzáadása</mat-card-title>
     </mat-card-header>
+
     <mat-card-content>
       <mat-form-field appearance="fill">
         <mat-label>Cím</mat-label>
         <input matInput formControlName="title" />
-        <mat-error *ngIf="weddingForm.controls['title'].hasError('required')">A cím kötelező!</mat-error>
-        <mat-error *ngIf="weddingForm.controls['title'].hasError('minlength')">Legalább 3 karakter hosszú kell legyen!</mat-error>
+        @if (weddingForm.controls['title'].hasError('required')) {
+          <mat-error>A cím kötelező!</mat-error>
+        }
+        @if (weddingForm.controls['title'].hasError('minlength')) {
+          <mat-error>Legalább 3 karakter hosszú kell legyen!</mat-error>
+        }
       </mat-form-field>
 
       <mat-form-field appearance="fill">
         <mat-label>Helyszín</mat-label>
-        <input matInput formControlName="location" />
-        <mat-error *ngIf="weddingForm.controls['location'].hasError('required')">A helyszín kötelező!</mat-error>
+        <mat-select formControlName="location">
+          @for (loc of locations; track loc.name) {
+            <mat-option [value]="loc.name">
+              {{ loc.name }} ({{ loc.city }}, {{ loc.country }})
+            </mat-option>
+          }
+        </mat-select>
       </mat-form-field>
 
       <mat-form-field appearance="fill">
@@ -32,63 +42,255 @@
       </mat-form-field>
 
       <mat-form-field appearance="fill">
+        <mat-label>Szolgáltatások</mat-label>
+        <mat-select formControlName="services" multiple>
+          @for (service of services; track service.name) {
+            <mat-option [value]="service">
+              {{ service.name }} - {{ service.price }} Ft
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
         <mat-label>Leírás</mat-label>
         <textarea matInput formControlName="description"></textarea>
       </mat-form-field>
 
-      <mat-form-field appearance="fill">
-        <mat-label>Kép URL</mat-label>
-        <input matInput formControlName="imageUrl" />
-      </mat-form-field>
+      <button mat-button color="primary" (click)="fileInput.click()">Kép kiválasztása</button>
+      <input #fileInput type="file" (change)="onImageSelected($event)" accept="image/*" />
+
+
+      @if (isLoading) {
+        <div class="loading-spinner">
+          <mat-spinner></mat-spinner>
+        </div>
+      }
+
+      <div class="button-row">
+        <button mat-raised-button color="primary" [disabled]="weddingForm.invalid || isLoading" type="submit">
+          {{ editingWeddingId ? 'Mentés' : 'Hozzáadás' }}
+        </button>
+
+        <button *ngIf="editingWeddingId" mat-stroked-button color="warn" type="button" (click)="cancelEdit()">
+          Mégse
+        </button>
+      </div>
 
       <div *ngIf="isLoading" class="loading-spinner">
         <mat-spinner></mat-spinner>
       </div>
+    </mat-card-content>
+  </form>
+</mat-card>
 
-      <button mat-raised-button color="primary" [disabled]="weddingForm.invalid || isLoading" type="submit">
-        {{ isLoading ? 'Hozzáadás...' : 'Hozzáadás' }}
+<mat-card>
+  <form [formGroup]="locationForm" (ngSubmit)="addLocation()">
+    <mat-card-header>
+      <mat-card-title>Új helyszín hozzáadása</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <mat-form-field appearance="fill">
+        <mat-label>Név</mat-label>
+        <input matInput formControlName="name" />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Város</mat-label>
+        <input matInput formControlName="city" />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Ország</mat-label>
+        <input matInput formControlName="country" />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Kapacitás</mat-label>
+        <input matInput type="number" formControlName="capacity" />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Leírás</mat-label>
+        <textarea matInput formControlName="description"></textarea>
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" type="submit">
+        Helyszín hozzáadása
       </button>
     </mat-card-content>
   </form>
 </mat-card>
 
-<mat-table [dataSource]="weddings">
-  <ng-container matColumnDef="title">
-    <mat-header-cell *matHeaderCellDef> Cím </mat-header-cell>
-    <mat-cell *matCellDef="let wedding" [attr.data-header]="'Cím'"> {{ wedding.title }} </mat-cell>
-  </ng-container>
+<mat-card>
+  <form [formGroup]="serviceForm" (ngSubmit)="addService()">
+    <mat-card-header>
+      <mat-card-title>Új szolgáltatás hozzáadása</mat-card-title>
+    </mat-card-header>
 
-  <ng-container matColumnDef="location">
-    <mat-header-cell *matHeaderCellDef> Helyszín </mat-header-cell>
-    <mat-cell *matCellDef="let wedding" [attr.data-header]="'Helyszín'"> {{ wedding.location }} </mat-cell>
-  </ng-container>
+    <mat-card-content>
+      <mat-form-field appearance="fill">
+        <mat-label>Név</mat-label>
+        <input matInput formControlName="name" />
+      </mat-form-field>
 
-  <ng-container matColumnDef="weddingDate">
-    <mat-header-cell *matHeaderCellDef> Esküvő dátuma </mat-header-cell>
-    <mat-cell *matCellDef="let wedding" [attr.data-header]="'Esküvő dátuma'"> {{ wedding.weddingDate | dateFormatter }} </mat-cell>
-  </ng-container>
+      <mat-form-field appearance="fill">
+        <mat-label>Leírás</mat-label>
+        <textarea matInput formControlName="description"></textarea>
+      </mat-form-field>
 
-  <ng-container matColumnDef="serviceLevel">
-    <mat-header-cell *matHeaderCellDef> Szolgáltatás szint </mat-header-cell>
-    <mat-cell *matCellDef="let wedding" [attr.data-header]="'Szolgáltatás szint'"> {{ wedding.serviceLevel }} </mat-cell>
-  </ng-container>
+      <mat-form-field appearance="fill">
+        <mat-label>Ár</mat-label>
+        <input matInput type="number" formControlName="price" />
+      </mat-form-field>
 
-  <ng-container matColumnDef="status">
-    <mat-header-cell *matHeaderCellDef> Státusz </mat-header-cell>
-    <mat-cell *matCellDef="let wedding" [attr.data-header]="'Státusz'"> {{ wedding.status }} </mat-cell>
-  </ng-container>
+      <mat-form-field appearance="fill">
+        <mat-label>Elérhető?</mat-label>
+        <mat-select formControlName="available">
+          <mat-option [value]="true">Igen</mat-option>
+          <mat-option [value]="false">Nem</mat-option>
+        </mat-select>
+      </mat-form-field>
 
-  <ng-container matColumnDef="actions">
-    <mat-header-cell *matHeaderCellDef> Műveletek </mat-header-cell>
-    <mat-cell *matCellDef="let wedding" [attr.data-header]="'Műveletek'">
-      <div class="mat-column-actions">
-        <button mat-button (click)="editWedding(wedding)">Szerkesztés</button>
-        <button mat-button color="warn" (click)="deleteWedding(wedding.id)">Törlés</button>
-        <button mat-button color="accent" (click)="resetWeddingStatus(wedding)">Visszaállítás</button>
-      </div>
-    </mat-cell>
-  </ng-container>
+      <button mat-raised-button color="primary" type="submit">
+        Szolgáltatás hozzáadása
+      </button>
+    </mat-card-content>
+  </form>
+</mat-card>
 
-  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-  <mat-row class="responsive-row" *matRowDef="let row; columns: displayedColumns;"></mat-row>
-</mat-table>
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Esküvők</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-table [dataSource]="weddings">
+      <ng-container matColumnDef="title">
+        <mat-header-cell *matHeaderCellDef> Cím </mat-header-cell>
+        <mat-cell *matCellDef="let wedding"> {{ wedding.title }} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="location">
+        <mat-header-cell *matHeaderCellDef> Helyszín </mat-header-cell>
+        <mat-cell *matCellDef="let wedding"> {{ wedding.location }} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="weddingDate">
+        <mat-header-cell *matHeaderCellDef> Esküvő dátuma </mat-header-cell>
+        <mat-cell *matCellDef="let wedding"> {{ wedding.weddingDate | dateFormatter }} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="serviceLevel">
+        <mat-header-cell *matHeaderCellDef> Szint </mat-header-cell>
+        <mat-cell *matCellDef="let wedding"> {{ wedding.serviceLevel }} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <mat-header-cell *matHeaderCellDef> Státusz </mat-header-cell>
+        <mat-cell *matCellDef="let wedding"> {{ wedding.status }} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef> Műveletek </mat-header-cell>
+        <mat-cell *matCellDef="let wedding">
+          <button mat-button (click)="editWedding(wedding)">Szerkesztés</button>
+          <button mat-button color="warn" (click)="deleteWedding(wedding.id)">Törlés</button>
+          <button mat-button color="accent" (click)="resetWeddingStatus(wedding)">Visszaállítás</button>
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+  </mat-card-content>
+</mat-card>
+
+  
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Szolgáltatások</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-table [dataSource]="services">
+      <ng-container matColumnDef="name">
+        <mat-header-cell *matHeaderCellDef> Név </mat-header-cell>
+        <mat-cell *matCellDef="let s"> {{ s.name }} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="description">
+        <mat-header-cell *matHeaderCellDef> Leírás </mat-header-cell>
+        <mat-cell *matCellDef="let s"> {{ s.description }} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="price">
+        <mat-header-cell *matHeaderCellDef> Ár </mat-header-cell>
+        <mat-cell *matCellDef="let s"> {{ s.price | number }} Ft </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="available">
+        <mat-header-cell *matHeaderCellDef> Elérhető </mat-header-cell>
+        <mat-cell *matCellDef="let s"> {{ s.available ? 'Igen' : 'Nem' }} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef> Műveletek </mat-header-cell>
+        <mat-cell *matCellDef="let s">
+          <button mat-button (click)="editService(s)">Szerkesztés</button>
+          <button mat-button color="warn" (click)="deleteService(s.id)">Törlés</button>
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="['name', 'description', 'price', 'available', 'actions']"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: ['name', 'description', 'price', 'available', 'actions'];"></mat-row>
+    </mat-table>
+  </mat-card-content>
+</mat-card>
+
+
+
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Helyszínek</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-table [dataSource]="locations">
+      <ng-container matColumnDef="name">
+        <mat-header-cell *matHeaderCellDef> Név </mat-header-cell>
+        <mat-cell *matCellDef="let l"> {{ l.name }} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="city">
+        <mat-header-cell *matHeaderCellDef> Város </mat-header-cell>
+        <mat-cell *matCellDef="let l"> {{ l.city }} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="country">
+        <mat-header-cell *matHeaderCellDef> Ország </mat-header-cell>
+        <mat-cell *matCellDef="let l"> {{ l.country }} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="capacity">
+        <mat-header-cell *matHeaderCellDef> Kapacitás </mat-header-cell>
+        <mat-cell *matCellDef="let l"> {{ l.capacity }} fő </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="description">
+        <mat-header-cell *matHeaderCellDef> Leírás </mat-header-cell>
+        <mat-cell *matCellDef="let l"> {{ l.description }} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef> Műveletek </mat-header-cell>
+        <mat-cell *matCellDef="let l">
+          <button mat-button (click)="editLocation(l)">Szerkesztés</button>
+          <button mat-button color="warn" (click)="deleteLocation(l.id)">Törlés</button>
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="['name', 'city', 'country', 'capacity', 'description', 'actions']"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: ['name', 'city', 'country', 'capacity', 'description', 'actions'];"></mat-row>
+    </mat-table>
+  </mat-card-content>
+</mat-card>
+

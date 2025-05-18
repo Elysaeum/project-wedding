@@ -1,26 +1,28 @@
+<p class="user-greeting">Üdv, {{ userName }}!</p>
+
 <mat-nav-list>
-  <a mat-list-item routerLink="/home" routerLinkActive="active-list-item" (click)="closeMenu()">
+  <a mat-list-item routerLink="/home" routerLinkActive="active-list-item" (click)="navigateTo('/home')">
     <mat-icon matListItemIcon>home</mat-icon>
     <span matListItemTitle>Főoldal</span>
   </a>
 
-  <a mat-list-item routerLink="/wedding" routerLinkActive="active-list-item" (click)="closeMenu()">
+  <a mat-list-item routerLink="/wedding" routerLinkActive="active-list-item" (click)="navigateTo('/wedding')">
     <mat-icon matListItemIcon>assignment</mat-icon>
     <span matListItemTitle>Esküvők</span>
   </a>
 
   <ng-container *ngIf="isLoggedIn">
-    <a mat-list-item routerLink="/kedvencek" routerLinkActive="active-list-item" (click)="closeMenu()">
+    <a mat-list-item routerLink="/kedvencek" routerLinkActive="active-list-item" (click)="navigateTo('/kedvencek')">
       <mat-icon matListItemIcon>favorite</mat-icon>
       <span matListItemTitle>Kedvencek</span>
     </a>
 
-    <a mat-list-item routerLink="/profile" routerLinkActive="active-list-item" (click)="closeMenu()">
+    <a mat-list-item routerLink="/profile" routerLinkActive="active-list-item" (click)="navigateTo('/profile')">
       <mat-icon matListItemIcon>person</mat-icon>
       <span matListItemTitle>Profil</span>
     </a>
 
-    <a mat-list-item routerLink="/admin-dashboard" routerLinkActive="active-list-item" (click)="closeMenu()">
+    <a mat-list-item routerLink="/admin-dashboard" routerLinkActive="active-list-item" (click)="navigateTo('/admin-dashboard')">
       <mat-icon matListItemIcon>dashboard</mat-icon>
       <span matListItemTitle>Admin Dashboard</span>
     </a>
@@ -32,12 +34,12 @@
   </ng-container>
 
   <ng-container *ngIf="!isLoggedIn">
-    <a mat-list-item routerLink="/login" routerLinkActive="active-list-item" (click)="closeMenu()">
+    <a mat-list-item routerLink="/login" routerLinkActive="active-list-item" (click)="navigateTo('/login')">
       <mat-icon matListItemIcon>login</mat-icon>
       <span matListItemTitle>Bejelentkezés</span>
     </a>
 
-    <a mat-list-item routerLink="/registration" routerLinkActive="active-list-item" (click)="closeMenu()">
+    <a mat-list-item routerLink="/registration" routerLinkActive="active-list-item" (click)="navigateTo('/registration')">
       <mat-icon matListItemIcon>person_add</mat-icon>
       <span matListItemTitle>Regisztráció</span>
     </a>

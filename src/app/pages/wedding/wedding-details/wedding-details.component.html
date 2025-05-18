@@ -1,21 +1,22 @@
-<div *ngIf="wedding$ | async as wedding" class="wedding-details">
+<div *ngIf="wedding && location" class="wedding-details">
   <h1>{{ wedding.title }}</h1>
+
   <div class="image-container">
     <img [src]="getImageUrl(wedding.imageUrl)" alt="{{ wedding.title }}" />
   </div>
 
-  <p><strong>Helyszín:</strong> {{ wedding.location.name }} - {{ wedding.location.city }}, {{ wedding.location.country }}</p>
-  <p><strong>Kapacitás:</strong> {{ wedding.location.capacity }}</p>
-  <p><strong>Helyszín leírása:</strong> {{ wedding.location.description }}</p>
+  <p><strong>Helyszín:</strong> {{ location.name }} - {{ location.city }}, {{ location.country }}</p>
+  <p><strong>Kapacitás:</strong> {{ location.capacity }}</p>
+  <p><strong>Helyszín leírása:</strong> {{ location.description }}</p>
   <p><strong>Dátum:</strong> {{ wedding.weddingDate | dateFormatter }}</p>
   <p><strong>Szolgáltatás szint:</strong> {{ wedding.serviceLevel }}</p>
   <p><strong>Leírás:</strong> {{ wedding.description }}</p>
 
-  <div *ngIf="wedding.services?.length">
+  <div *ngIf="services.length > 0">
     <h3>Szolgáltatások:</h3>
     <ul>
-      <li *ngFor="let service of wedding.services" [ngStyle]="getServiceStyles(service)">
-        <strong>{{ service.name }}</strong>: {{ service.description }} ({{ service.price }} Ft)
+      <li *ngFor="let service of services" [ngStyle]="getServiceStyles(service)">
+        <strong>{{ service.name }}</strong>: {{ service.description }} ({{ service.price | servicePrice }})
       </li>
     </ul>
   </div>

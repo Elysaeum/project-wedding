@@ -1,4 +1,5 @@
-export interface Location {
+export interface WeddingLocation {
+    id: string;
     name: string;
     city: string;
     country: string;
